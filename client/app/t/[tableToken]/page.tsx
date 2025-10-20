@@ -1,14 +1,57 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { UtensilsCrossed, CreditCard } from "lucide-react"
-import { getRestaurantData } from "@/lib/mock-data"
+import { UtensilsCrossed, CreditCard, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
+async function getTableContext(tableToken: string) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/public/table-context/${tableToken}`, {
+      cache: "no-store",
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+  } catch (error) {
+    console.error("Error fetching table context:", error)
+  }
+  return null
+}
 
 export default async function TableLandingPage({ params }: { params: Promise<{ tableToken: string }> }) {
   const { tableToken } = await params
+  const context = await getTableContext(tableToken)
 
-  const mockData = getRestaurantData()
-  const restaurant = mockData.restaurants[0]
+  // Invalid token - show error
+  if (!context) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
+        <Card className="w-full max-w-md shadow-lg">
+          <CardContent className="pt-8 pb-8 px-6">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Invalid Table</AlertTitle>
+              <AlertDescription>
+                This table could not be found. Please scan the QR code at your table or check the URL.
+              </AlertDescription>
+            </Alert>
+            <div className="mt-6 space-y-2 text-sm text-muted-foreground">
+              <p><strong>Token used:</strong> {tableToken}</p>
+              <p className="mt-4">
+                <strong>For testing, use:</strong>
+                <br />
+                <Link href="/t/table1abc" className="text-primary hover:underline">
+                  /t/table1abc
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const restaurant = context.restaurant
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">

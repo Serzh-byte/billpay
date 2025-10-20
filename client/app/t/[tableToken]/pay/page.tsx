@@ -1,14 +1,33 @@
 import { PaymentView } from "@/components/payment-view"
-import { getRestaurantData } from "@/lib/mock-data"
+
+async function getBillData(tableToken: string) {
+  try {
+    const response = await fetch(`http://localhost:3000/api/public/bill/${tableToken}`, {
+      cache: "no-store",
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+  } catch (error) {
+    console.error("Error fetching bill:", error)
+  }
+  return null
+}
 
 export default async function PayPage({ params }: { params: Promise<{ tableToken: string }> }) {
   const { tableToken } = await params
+  const data = await getBillData(tableToken)
 
-  const mockData = getRestaurantData()
-  const restaurant = mockData.restaurants[0]
-  const table = mockData.tables[0]
-  const bill = mockData.bills.find((b) => b.tableId === table.id) || null
-  const settings = mockData.settings
+  const bill = data?.bill || null
+  const settings = data?.settings || {
+    taxPercent: 8.75,
+    serviceFeePercent: 3,
+    tipPresets: [0.15, 0.18, 0.20, 0.25],
+  }
+
+  // Mock restaurant and table data for now (would come from context API)
+  const restaurant = { id: "1", name: "Demo Restaurant" }
+  const table = { id: "1", restaurantId: "1", tableNumber: tableToken }
 
   return (
     <PaymentView restaurant={restaurant} table={table} tableToken={tableToken} initialBill={bill} settings={settings} />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, ShoppingBag, Plus, Minus } from "lucide-react"
 import Link from "next/link"
 import type { Restaurant, Table, MenuItem, Category, Bill } from "@/lib/types"
-import { getRestaurantData } from "@/lib/mock-data"
 
 interface MenuViewProps {
   restaurant: Restaurant
@@ -21,56 +20,60 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [quantity, setQuantity] = useState(1)
-  const [bill, setBill] = useState<Bill | null>(() => {
-    const mockData = getRestaurantData()
-    return mockData.bills.find((b) => b.tableId === table.id) || null
-  })
+  const [bill, setBill] = useState<Bill | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Fetch bill on mount
+  useEffect(() => {
+    fetchBill()
+  }, [tableToken])
+
+  const fetchBill = async () => {
+    try {
+      const response = await fetch(`/api/public/bill/${tableToken}`)
+      if (response.ok) {
+        const data = await response.json()
+        setBill(data.bill)
+      }
+    } catch (error) {
+      console.error("Error fetching bill:", error)
+    }
+  }
 
   const filteredItems = selectedCategory
     ? menu.items.filter((item) => item.categoryId === selectedCategory && item.available)
     : menu.items.filter((item) => item.available)
 
-  const handleAddToBill = () => {
+  const handleAddToBill = async () => {
     if (!selectedItem) return
+    setIsLoading(true)
 
-    const newItem = {
-      id: `billitem${Date.now()}`,
-      menuItemId: selectedItem.id,
-      menuItemName: selectedItem.name,
-      quantity,
-      price: selectedItem.price,
+    try {
+      const response = await fetch(`/api/public/bill/${tableToken}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemId: selectedItem.id,
+          quantity,
+          options: {},
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setBill(data.bill)
+        setSelectedItem(null)
+        setQuantity(1)
+      } else {
+        console.error("Failed to add item to bill")
+      }
+    } catch (error) {
+      console.error("Error adding item to bill:", error)
+    } finally {
+      setIsLoading(false)
     }
-
-    const updatedBill = bill
-      ? {
-          ...bill,
-          items: [...bill.items, newItem],
-        }
-      : {
-          id: `bill${Date.now()}`,
-          tableId: table.id,
-          items: [newItem],
-          subtotal: 0,
-          tax: 0,
-          serviceFee: 0,
-          tip: 0,
-          total: 0,
-          status: "open" as const,
-        }
-
-    // Recalculate totals
-    const subtotal = updatedBill.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    const mockData = getRestaurantData()
-    const tax = subtotal * (mockData.settings.taxPercent / 100)
-    const serviceFee = subtotal * (mockData.settings.serviceFeePercent / 100)
-    updatedBill.subtotal = subtotal
-    updatedBill.tax = tax
-    updatedBill.serviceFee = serviceFee
-    updatedBill.total = subtotal + tax + serviceFee
-
-    setBill(updatedBill)
-    setSelectedItem(null)
-    setQuantity(1)
   }
 
   const billItemCount = bill?.items.reduce((sum, item) => sum + item.quantity, 0) || 0
@@ -159,18 +162,18 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
             <SheetTitle>Your Bill</SheetTitle>
           </SheetHeader>
           <div className="mt-6 space-y-4">
-            {bill?.items.map((item) => (
-              <div key={item.id} className="flex justify-between items-center">
-                <div className="flex-1">
-                  <p className="font-medium">{item.menuItemName}</p>
-                  <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                </div>
-                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-              </div>
-            ))}
-
-            {bill && (
+            {bill?.items && bill.items.length > 0 ? (
               <>
+                {bill.items.map((item) => (
+                  <div key={item.id} className="flex justify-between items-center">
+                    <div className="flex-1">
+                      <p className="font-medium">{item.menuItemName}</p>
+                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                    </div>
+                    <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
@@ -194,9 +197,9 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                   <Link href={`/t/${tableToken}/pay`}>Go to Payment</Link>
                 </Button>
               </>
+            ) : (
+              <p className="text-center text-muted-foreground py-8">No items added yet</p>
             )}
-
-            {!bill?.items.length && <p className="text-center text-muted-foreground py-8">No items added yet</p>}
           </div>
         </SheetContent>
       </Sheet>
@@ -229,8 +232,8 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                 </Button>
               </div>
 
-              <Button size="lg" className="w-full" onClick={handleAddToBill}>
-                Add to Bill - ${(selectedItem.price * quantity).toFixed(2)}
+              <Button size="lg" className="w-full" onClick={handleAddToBill} disabled={isLoading}>
+                {isLoading ? "Adding..." : `Add to Bill - $${(selectedItem.price * quantity).toFixed(2)}`}
               </Button>
             </div>
           )}

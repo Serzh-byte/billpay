@@ -83,34 +83,7 @@ const mockData = {
       available: true,
     },
   ] as (MenuItem & { restaurantId: string })[],
-  bills: [
-    {
-      id: "bill1",
-      tableId: "table1",
-      items: [
-        {
-          id: "billitem1",
-          menuItemId: "item1",
-          menuItemName: "Bruschetta",
-          quantity: 2,
-          price: 8.99,
-        },
-        {
-          id: "billitem2",
-          menuItemId: "item3",
-          menuItemName: "Grilled Salmon",
-          quantity: 1,
-          price: 24.99,
-        },
-      ],
-      subtotal: 42.97,
-      tax: 3.44,
-      serviceFee: 2.15,
-      tip: 0,
-      total: 48.56,
-      status: "open" as const,
-    },
-  ] as Bill[],
+  bills: [] as Bill[],
   settings: {
     taxPercent: 8,
     serviceFeePercent: 5,
