@@ -66,6 +66,7 @@ class Command(BaseCommand):
                 name='Spring Rolls',
                 description='Crispy vegetable spring rolls with sweet chili sauce',
                 price_cents=895,
+                image_url='https://images.unsplash.com/photo-1529042410759-befb1204b468?w=400&h=400&fit=crop',
                 available=True,
                 options_json={}
             )
@@ -76,6 +77,7 @@ class Command(BaseCommand):
                 name='Chicken Wings',
                 description='Buffalo wings with ranch dressing',
                 price_cents=1295,
+                image_url='https://images.unsplash.com/photo-1608039755401-742074f0548d?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'spicy_level': ['Mild', 'Medium', 'Hot', 'Extra Hot']}
             )
@@ -86,6 +88,7 @@ class Command(BaseCommand):
                 name='Calamari',
                 description='Fried calamari rings with marinara sauce',
                 price_cents=1495,
+                image_url='https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=400&fit=crop',
                 available=True,
                 options_json={}
             )
@@ -103,6 +106,7 @@ class Command(BaseCommand):
                 name='Grilled Salmon',
                 description='Fresh Atlantic salmon with roasted vegetables',
                 price_cents=2495,
+                image_url='https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'cooking': ['Medium', 'Well Done']}
             )
@@ -113,6 +117,7 @@ class Command(BaseCommand):
                 name='Ribeye Steak',
                 description='12oz ribeye with garlic mashed potatoes',
                 price_cents=3495,
+                image_url='https://images.unsplash.com/photo-1558030006-450675393462?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'cooking': ['Rare', 'Medium Rare', 'Medium', 'Medium Well', 'Well Done']}
             )
@@ -123,6 +128,7 @@ class Command(BaseCommand):
                 name='Chicken Parmesan',
                 description='Breaded chicken breast with marinara and mozzarella',
                 price_cents=1895,
+                image_url='https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=400&h=400&fit=crop',
                 available=True,
                 options_json={}
             )
@@ -133,6 +139,7 @@ class Command(BaseCommand):
                 name='Vegetarian Pasta',
                 description='Penne pasta with seasonal vegetables in tomato sauce',
                 price_cents=1695,
+                image_url='https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'pasta_type': ['Penne', 'Spaghetti', 'Fettuccine']}
             )
@@ -150,6 +157,7 @@ class Command(BaseCommand):
                 name='Chocolate Lava Cake',
                 description='Warm chocolate cake with vanilla ice cream',
                 price_cents=895,
+                image_url='https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=400&h=400&fit=crop',
                 available=True,
                 options_json={}
             )
@@ -160,6 +168,7 @@ class Command(BaseCommand):
                 name='Tiramisu',
                 description='Classic Italian dessert with coffee and mascarpone',
                 price_cents=795,
+                image_url='https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&h=400&fit=crop',
                 available=True,
                 options_json={}
             )
@@ -170,6 +179,7 @@ class Command(BaseCommand):
                 name='Cheesecake',
                 description='New York style cheesecake with berry compote',
                 price_cents=795,
+                image_url='https://images.unsplash.com/photo-1533134242820-f8f85e4ba05b?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'topping': ['Strawberry', 'Blueberry', 'Mixed Berry', 'Plain']}
             )
@@ -187,6 +197,7 @@ class Command(BaseCommand):
                 name='Soft Drinks',
                 description='Coca-Cola, Sprite, Fanta, Iced Tea',
                 price_cents=295,
+                image_url='https://images.unsplash.com/photo-1581006852262-e4307cf6283a?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'type': ['Coca-Cola', 'Sprite', 'Fanta', 'Iced Tea']}
             )
@@ -197,6 +208,7 @@ class Command(BaseCommand):
                 name='Fresh Juice',
                 description='Orange, Apple, or Cranberry juice',
                 price_cents=495,
+                image_url='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'type': ['Orange', 'Apple', 'Cranberry']}
             )
@@ -207,6 +219,7 @@ class Command(BaseCommand):
                 name='Coffee',
                 description='Freshly brewed coffee',
                 price_cents=395,
+                image_url='https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop',
                 available=True,
                 options_json={'type': ['Black', 'With Cream', 'Cappuccino', 'Latte']}
             )

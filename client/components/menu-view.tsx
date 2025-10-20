@@ -67,10 +67,13 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
         setSelectedItem(null)
         setQuantity(1)
       } else {
-        console.error("Failed to add item to bill")
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
+        console.error("Failed to add item to bill:", response.status, errorData)
+        alert(`Failed to add item: ${errorData.error || "Unknown error"}`)
       }
     } catch (error) {
       console.error("Error adding item to bill:", error)
+      alert(`Error adding item: ${error instanceof Error ? error.message : "Unknown error"}`)
     } finally {
       setIsLoading(false)
     }
@@ -170,7 +173,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                       <p className="font-medium">{item.menuItemName}</p>
                       <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold">${(item.lineTotal || (item.price * item.quantity)).toFixed(2)}</p>
                   </div>
                 ))}
 

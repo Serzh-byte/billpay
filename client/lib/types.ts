@@ -32,6 +32,8 @@ export interface BillItem {
   menuItemName: string
   quantity: number
   price: number
+  lineTotal: number
+  options?: Record<string, any>
 }
 
 export interface Bill {

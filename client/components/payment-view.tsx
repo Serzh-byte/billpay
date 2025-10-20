@@ -81,6 +81,24 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
       </div>
 
       <div className="p-4 space-y-4 max-w-2xl mx-auto">
+        {/* Order Items */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Order</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {initialBill.items.map((item) => (
+              <div key={item.id} className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p className="font-medium">{item.menuItemName}</p>
+                  <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                </div>
+                <p className="font-semibold">${item.lineTotal.toFixed(2)}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Payment Mode */}
         <Card>
           <CardHeader>
