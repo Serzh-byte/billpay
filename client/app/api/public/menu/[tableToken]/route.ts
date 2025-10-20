@@ -1,22 +1,48 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getRestaurantData } from "@/lib/mock-data"
+
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://localhost:8000/api"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ tableToken: string }> }) {
   const { tableToken } = await params
 
   try {
-    const data = getRestaurantData()
-    const [restaurantId] = tableToken.split("-")
+    const response = await fetch(`${DJANGO_API_URL}/public/menu/${tableToken}`)
+    
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
+    }
 
-    const categories = data.categories.filter((c) => c.restaurantId === restaurantId)
-    const menuItems = data.menuItems.filter((m) => m.restaurantId === restaurantId)
+    const categories = await response.json()
+    
+    // Transform Django response to frontend format
+    const transformedCategories = categories.map((cat: any) => ({
+      id: cat.id.toString(),
+      name: cat.name,
+      sortOrder: cat.position,
+      restaurantId: "1", // Would be from context
+    }))
+    
+    const menuItems = categories.flatMap((cat: any) => 
+      cat.items.map((item: any) => ({
+        id: item.id.toString(),
+        categoryId: cat.id.toString(),
+        restaurantId: "1",
+        name: item.name,
+        description: item.description,
+        price: item.price_cents / 100, // Convert cents to dollars for display
+        image: item.image_url,
+        available: item.available,
+        options: item.options_json,
+      }))
+    )
 
     return NextResponse.json({
-      categories: categories.sort((a, b) => a.sortOrder - b.sortOrder),
+      categories: transformedCategories,
       menuItems,
     })
   } catch (error) {
-    console.error("[v0] Error fetching menu:", error)
+    console.error("Error fetching menu:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

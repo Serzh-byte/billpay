@@ -1,41 +1,56 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getRestaurantData, updateBillStatus } from "@/lib/mock-data"
+
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://localhost:8000/api"
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ tableToken: string }> }) {
   const { tableToken } = await params
 
   try {
     const body = await request.json()
-    const { amount, tip, paymentMode } = body
+    const { amount, tip, paymentMode, seats } = body
 
-    const data = getRestaurantData()
-    const [restaurantId, tableNumber] = tableToken.split("-")
-
-    const table = data.tables.find((t) => t.restaurantId === restaurantId && t.tableNumber === tableNumber)
-
-    if (!table) {
+    // Get table context for table ID
+    const contextResponse = await fetch(`${DJANGO_API_URL}/public/table-context/${tableToken}`)
+    if (!contextResponse.ok) {
       return NextResponse.json({ error: "Table not found" }, { status: 404 })
     }
+    
+    const context = await contextResponse.json()
+    const tableId = context.tableId
 
-    const bill = data.bills.find((b) => b.tableId === table.id)
+    // Convert tip from dollars to cents and payment mode format
+    const tipCents = Math.round((tip || 0) * 100)
+    const mode = paymentMode || "full"
 
-    if (!bill) {
-      return NextResponse.json({ error: "No bill found" }, { status: 404 })
+    // Create payment intent
+    const response = await fetch(`${DJANGO_API_URL}/public/tables/${tableId}/payment/intent`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mode,
+        seats: seats || 1,
+        tip: tipCents,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
     }
 
-    // In a real app, this would process payment through a payment gateway
-    // For MVP, we'll just mark the bill as paid
-    console.log("[v0] Processing payment:", { amount, tip, paymentMode, billId: bill.id })
-
-    // Update bill status
-    updateBillStatus(bill.id, "paid", tip)
+    const paymentData = await response.json()
 
     return NextResponse.json({
       success: true,
       message: "Payment processed successfully",
+      paymentId: paymentData.paymentId,
+      status: paymentData.status,
+      billClosed: paymentData.billClosed,
     })
   } catch (error) {
-    console.error("[v0] Error processing payment:", error)
+    console.error("Error processing payment:", error)
     return NextResponse.json({ error: "Payment failed" }, { status: 500 })
   }
 }

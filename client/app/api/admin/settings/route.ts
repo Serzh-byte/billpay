@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getRestaurantData, updateSettings } from "@/lib/mock-data"
+
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://localhost:8000/api"
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,11 +10,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const data = getRestaurantData()
+    const response = await fetch(`${DJANGO_API_URL}/admin/settings`, {
+      headers: {
+        "X-Admin-Token": adminToken,
+      },
+    })
 
-    return NextResponse.json(data.settings)
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
+    }
+
+    const data = await response.json()
+
+    return NextResponse.json({
+      taxPercent: data.tax_rate * 100,
+      serviceFeePercent: data.service_fee_rate * 100,
+      tipPresets: data.tip_presets_json,
+    })
   } catch (error) {
-    console.error("[v0] Error fetching settings:", error)
+    console.error("Error fetching settings:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -29,15 +45,30 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { taxPercent, serviceFeePercent, tipPresets } = body
 
-    // In a real app, this would update the database
-    updateSettings({ taxPercent, serviceFeePercent, tipPresets })
+    const response = await fetch(`${DJANGO_API_URL}/admin/settings`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Admin-Token": adminToken,
+      },
+      body: JSON.stringify({
+        tax_rate: taxPercent / 100,
+        service_fee_rate: serviceFeePercent / 100,
+        tip_presets_json: tipPresets,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
+    }
 
     return NextResponse.json({
       success: true,
       message: "Settings updated successfully",
     })
   } catch (error) {
-    console.error("[v0] Error updating settings:", error)
+    console.error("Error updating settings:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getRestaurantData } from "@/lib/mock-data"
+
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://localhost:8000/api"
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,18 +10,37 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const data = getRestaurantData()
-    const [restaurantId] = adminToken.split("-admin")
+    const response = await fetch(`${DJANGO_API_URL}/admin/tables`, {
+      headers: {
+        "X-Admin-Token": adminToken,
+      },
+    })
 
-    const restaurant = data.restaurants.find((r) => r.id === restaurantId)
-    const tables = data.tables.filter((t) => t.restaurantId === restaurantId)
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
+    }
+
+    const tables = await response.json()
+
+    // Transform to frontend format
+    const transformedTables = tables.map((table: any) => ({
+      id: table.id.toString(),
+      restaurantId: "1",
+      tableNumber: table.name,
+      qrCode: table.qr_data,
+      dinerUrl: table.diner_url,
+    }))
 
     return NextResponse.json({
-      restaurant,
-      tables,
+      restaurant: {
+        id: "1",
+        name: "Demo Restaurant",
+      },
+      tables: transformedTables,
     })
   } catch (error) {
-    console.error("[v0] Error fetching tables:", error)
+    console.error("Error fetching tables:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

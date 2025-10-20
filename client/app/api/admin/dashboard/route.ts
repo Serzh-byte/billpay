@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getRestaurantData } from "@/lib/mock-data"
+
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://localhost:8000/api"
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,28 +10,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // In a real app, validate admin token against database
-    const data = getRestaurantData()
-    const [restaurantId] = adminToken.split("-admin")
+    const response = await fetch(`${DJANGO_API_URL}/admin/dashboard`, {
+      headers: {
+        "X-Admin-Token": adminToken,
+      },
+    })
 
-    // Calculate stats
-    const openChecks = data.bills.filter(
-      (b) => b.status === "open" && data.tables.find((t) => t.id === b.tableId)?.restaurantId === restaurantId,
-    ).length
+    if (!response.ok) {
+      const error = await response.json()
+      return NextResponse.json(error, { status: response.status })
+    }
 
-    const todayRevenue = data.bills
-      .filter((b) => {
-        const table = data.tables.find((t) => t.id === b.tableId)
-        return b.status === "paid" && table?.restaurantId === restaurantId
-      })
-      .reduce((sum, bill) => sum + bill.total, 0)
+    const data = await response.json()
 
     return NextResponse.json({
-      openChecks,
-      todayRevenue,
+      openChecks: data.openChecksCount,
+      todayRevenue: data.todayRevenueCents / 100,
     })
   } catch (error) {
-    console.error("[v0] Error fetching dashboard stats:", error)
+    console.error("Error fetching dashboard stats:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
