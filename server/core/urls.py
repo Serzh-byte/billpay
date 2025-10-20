@@ -1,7 +1,7 @@
 from django.urls import path
 from .views_public import (
     TableContextView, PublicMenuView, TableBillView,
-    AddBillItemView, PaymentIntentView, ReceiptEmailView
+    AddBillItemView, RemoveBillItemView, PaymentIntentView, ReceiptEmailView
 )
 from .views_admin import (
     AdminDashboardView, AdminMenuCategoriesView, AdminMenuCategoryDetailView,
@@ -14,6 +14,7 @@ urlpatterns = [
     path('public/menu/<str:table_token>', PublicMenuView.as_view(), name='public-menu'),
     path('public/tables/<int:table_id>/bill', TableBillView.as_view(), name='table-bill'),
     path('public/tables/<int:table_id>/bill/items', AddBillItemView.as_view(), name='add-bill-item'),
+    path('public/tables/<int:table_id>/bill/items/<int:line_id>', RemoveBillItemView.as_view(), name='remove-bill-item'),
     path('public/tables/<int:table_id>/payment/intent', PaymentIntentView.as_view(), name='payment-intent'),
     path('public/receipt/email', ReceiptEmailView.as_view(), name='receipt-email'),
     

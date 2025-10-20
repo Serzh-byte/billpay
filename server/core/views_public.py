@@ -125,6 +125,37 @@ class AddBillItemView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class RemoveBillItemView(APIView):
+    """
+    DELETE /api/public/tables/<table_id>/bill/items/<line_id>
+    Remove item from bill
+    """
+    def delete(self, request, table_id, line_id):
+        try:
+            table = Table.objects.get(id=table_id)
+        except Table.DoesNotExist:
+            return Response({'error': 'Table not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            bill = Bill.objects.get(table=table, is_open=True)
+        except Bill.DoesNotExist:
+            return Response({'error': 'No open bill found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            bill_line = BillLine.objects.get(id=line_id, bill=bill)
+        except BillLine.DoesNotExist:
+            return Response({'error': 'Bill item not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Delete the line
+        bill_line.delete()
+        
+        # Recalculate bill totals
+        bill.recalculate_totals()
+        
+        serializer = BillSerializer(bill)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class PaymentIntentView(APIView):
     """
     POST /api/public/tables/<table_id>/payment/intent

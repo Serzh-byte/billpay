@@ -7,7 +7,10 @@ import type { DashboardStats } from "@/lib/types"
 async function getDashboardStats(adminToken: string) {
   try {
     const data = await fetchAdminAPI("/admin/dashboard", adminToken)
-    return data as DashboardStats
+    return {
+      openChecks: data?.openChecks || 0,
+      todayRevenue: data?.todayRevenue || 0
+    } as DashboardStats
   } catch {
     return { openChecks: 0, todayRevenue: 0 }
   }
@@ -34,7 +37,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
               <Receipt className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.openChecks}</div>
+              <div className="text-2xl font-bold">{stats?.openChecks || 0}</div>
               <p className="text-xs text-muted-foreground">Active tables with orders</p>
             </CardContent>
           </Card>
@@ -45,7 +48,7 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.todayRevenue.toFixed(2)}</div>
+              <div className="text-2xl font-bold">${(stats?.todayRevenue || 0).toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">Total sales for today</p>
             </CardContent>
           </Card>

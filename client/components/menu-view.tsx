@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ArrowLeft, ShoppingBag, Plus, Minus } from "lucide-react"
+import { ArrowLeft, ShoppingBag, Plus, Minus, X } from "lucide-react"
 import Link from "next/link"
 import type { Restaurant, Table, MenuItem, Category, Bill } from "@/lib/types"
 
@@ -74,6 +74,31 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
     } catch (error) {
       console.error("Error adding item to bill:", error)
       alert(`Error adding item: ${error instanceof Error ? error.message : "Unknown error"}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleRemoveFromBill = async (lineId: string) => {
+    if (isLoading) return
+    setIsLoading(true)
+
+    try {
+      const response = await fetch(`/api/public/bill/${tableToken}/items/${lineId}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setBill(data.bill)
+      } else {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
+        console.error("Failed to remove item:", response.status, errorData)
+        alert(`Failed to remove item: ${errorData.error || "Unknown error"}`)
+      }
+    } catch (error) {
+      console.error("Error removing item:", error)
+      alert(`Error removing item: ${error instanceof Error ? error.message : "Unknown error"}`)
     } finally {
       setIsLoading(false)
     }
@@ -160,22 +185,37 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
             {bill && <span className="ml-auto font-bold">${bill.total.toFixed(2)}</span>}
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[80vh]">
-          <SheetHeader>
+        <SheetContent side="bottom" className="max-h-[85vh] flex flex-col p-0">
+          <SheetHeader className="px-6 pt-6 pb-4">
             <SheetTitle>Your Bill</SheetTitle>
           </SheetHeader>
-          <div className="mt-6 space-y-4">
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
             {bill?.items && bill.items.length > 0 ? (
-              <>
-                {bill.items.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center">
-                    <div className="flex-1">
-                      <p className="font-medium">{item.menuItemName}</p>
-                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  {bill.items.map((item) => (
+                    <div key={item.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm">{item.menuItemName}</p>
+                        <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm whitespace-nowrap">
+                          ${(item.lineTotal || (item.price * item.quantity)).toFixed(2)}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
+                          onClick={() => handleRemoveFromBill(item.id)}
+                          disabled={isLoading}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <p className="font-semibold">${(item.lineTotal || (item.price * item.quantity)).toFixed(2)}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
@@ -199,7 +239,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                 <Button asChild size="lg" className="w-full">
                   <Link href={`/t/${tableToken}/pay`}>Go to Payment</Link>
                 </Button>
-              </>
+              </div>
             ) : (
               <p className="text-center text-muted-foreground py-8">No items added yet</p>
             )}
