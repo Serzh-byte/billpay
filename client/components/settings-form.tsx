@@ -14,7 +14,11 @@ interface SettingsFormProps {
 }
 
 export function SettingsForm({ adminToken, initialSettings }: SettingsFormProps) {
-  const [settings, setSettings] = useState(initialSettings)
+  // Ensure tipPresets is always an array
+  const [settings, setSettings] = useState({
+    ...initialSettings,
+    tipPresets: initialSettings?.tipPresets || [15, 18, 20, 25]
+  })
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -84,7 +88,7 @@ export function SettingsForm({ adminToken, initialSettings }: SettingsFormProps)
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              {settings.tipPresets.map((preset, index) => (
+              {(settings?.tipPresets || []).map((preset, index) => (
                 <div key={index}>
                   <Label htmlFor={`tip-${index}`}>Preset {index + 1} (%)</Label>
                   <Input

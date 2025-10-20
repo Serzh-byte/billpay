@@ -22,6 +22,8 @@ class Restaurant(models.Model):
 
 class Table(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='tables')
+    restaurant_slug = models.CharField(max_length=50, default='rest1')  # e.g., 'rest1'
+    table_number = models.CharField(max_length=10, default='1')  # e.g., '1', '2', '3'
     name = models.CharField(max_length=100)
     table_token_hash = models.CharField(max_length=64, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -29,6 +31,11 @@ class Table(models.Model):
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.name}"
+    
+    @property
+    def table_token(self):
+        """Return the public table token in format: {restaurant_slug}-{table_number}"""
+        return f"{self.restaurant_slug}-{self.table_number}"
 
     @staticmethod
     def hash_token(token):

@@ -72,22 +72,9 @@ class AdminMenuCategorySerializer(serializers.ModelSerializer):
 
 
 class AdminTableSerializer(serializers.ModelSerializer):
-    diner_url = serializers.SerializerMethodField()
-    qr_data = serializers.SerializerMethodField()
+    restaurant_id = serializers.CharField(source='restaurant_slug', read_only=True)
 
     class Meta:
         model = Table
-        fields = ['id', 'name', 'diner_url', 'qr_data', 'created_at']
-        read_only_fields = ['created_at']
-
-    def get_diner_url(self, obj):
-        # We'll store the plain token in context
-        request = self.context.get('request')
-        table_token = self.context.get('table_token', '')
-        if request and table_token:
-            return f"{request.scheme}://{request.get_host()}/t/{table_token}"
-        return ""
-
-    def get_qr_data(self, obj):
-        # Return the URL as QR data - client will generate the actual QR code
-        return self.get_diner_url(obj)
+        fields = ['id', 'restaurant_id', 'table_number', 'name', 'table_token', 'created_at']
+        read_only_fields = ['created_at', 'table_token']

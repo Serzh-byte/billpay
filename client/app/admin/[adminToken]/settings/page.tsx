@@ -6,9 +6,13 @@ import type { Settings } from "@/lib/types"
 async function getSettings(adminToken: string) {
   try {
     const data = await fetchAdminAPI("/admin/settings", adminToken)
-    return data as Settings
+    return {
+      taxPercent: data?.taxPercent || 8.75,
+      serviceFeePercent: data?.serviceFeePercent || 3,
+      tipPresets: data?.tipPresets || [15, 18, 20, 25]
+    } as Settings
   } catch {
-    return { taxPercent: 8.5, serviceFeePercent: 3, tipPresets: [0, 10, 15, 20] }
+    return { taxPercent: 8.75, serviceFeePercent: 3, tipPresets: [15, 18, 20, 25] }
   }
 }
 

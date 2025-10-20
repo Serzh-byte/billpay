@@ -10,7 +10,7 @@ class Command(BaseCommand):
         
         # Fixed tokens for MVP
         ADMIN_TOKEN = 'admin123'
-        TABLE_TOKEN = 'table1abc'
+        RESTAURANT_ID = 'rest1'  # Public restaurant identifier
         
         # Create or get restaurant
         admin_token_hash = Restaurant.hash_token(ADMIN_TOKEN)
@@ -35,21 +35,36 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f'Restaurant already exists: {restaurant.name}')
         
-        # Create or get table
-        table_token_hash = Table.hash_token(TABLE_TOKEN)
-        table, created = Table.objects.get_or_create(
-            table_token_hash=table_token_hash,
-            defaults={
-                'restaurant': restaurant,
-                'name': 'Table 1'
-            }
-        )
+        # Create multiple tables with predictable tokens: rest1-1, rest1-2, rest1-3, etc.
+        tables_to_create = [
+            {'number': '1', 'name': 'Table 1'},
+            {'number': '2', 'name': 'Table 2'},
+            {'number': '3', 'name': 'Table 3'},
+            {'number': '4', 'name': 'Table 4'},
+            {'number': '5', 'name': 'Table 5'},
+        ]
         
-        if created:
-            self.stdout.write(self.style.SUCCESS(f'✓ Created table: {table.name}'))
-            self.stdout.write(self.style.WARNING(f'  Table token: {TABLE_TOKEN}'))
-        else:
-            self.stdout.write(f'Table already exists: {table.name}')
+        for table_info in tables_to_create:
+            table_number = table_info['number']
+            table_name = table_info['name']
+            table_token = f"{RESTAURANT_ID}-{table_number}"
+            table_token_hash = Table.hash_token(table_token)
+            
+            table, created = Table.objects.get_or_create(
+                table_token_hash=table_token_hash,
+                defaults={
+                    'restaurant': restaurant,
+                    'restaurant_slug': RESTAURANT_ID,
+                    'table_number': table_number,
+                    'name': table_name
+                }
+            )
+            
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'✓ Created table: {table.name}'))
+                self.stdout.write(self.style.WARNING(f'  Table token: {table_token}'))
+            else:
+                self.stdout.write(f'Table already exists: {table.name}')
         
         # Create menu categories and items
         if not MenuCategory.objects.filter(restaurant=restaurant).exists():
@@ -230,6 +245,6 @@ class Command(BaseCommand):
         
         self.stdout.write('')
         self.stdout.write(self.style.SUCCESS('=== Seeding Complete ==='))
-        self.stdout.write(self.style.WARNING(f'Admin URL: http://localhost:5173/admin/{ADMIN_TOKEN}'))
-        self.stdout.write(self.style.WARNING(f'Table URL: http://localhost:5173/t/{TABLE_TOKEN}'))
+        self.stdout.write(self.style.WARNING(f'Admin URL: http://localhost:3000/admin/{ADMIN_TOKEN}'))
+        self.stdout.write(self.style.WARNING(f'Table URLs: http://localhost:3000/t/{RESTAURANT_ID}-1, {RESTAURANT_ID}-2, etc.'))
         self.stdout.write('')

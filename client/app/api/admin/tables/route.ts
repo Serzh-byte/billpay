@@ -26,15 +26,14 @@ export async function GET(request: NextRequest) {
     // Transform to frontend format
     const transformedTables = tables.map((table: any) => ({
       id: table.id.toString(),
-      restaurantId: "1",
-      tableNumber: table.name,
-      qrCode: table.qr_data,
-      dinerUrl: table.diner_url,
+      restaurantId: table.restaurant_id,
+      tableNumber: table.table_number,
+      name: table.name,
     }))
 
     return NextResponse.json({
       restaurant: {
-        id: "1",
+        id: tables[0]?.restaurant_id || "rest1",
         name: "Demo Restaurant",
       },
       tables: transformedTables,

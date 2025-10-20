@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
     const data = await response.json()
 
     return NextResponse.json({
-      taxPercent: data.tax_rate * 100,
-      serviceFeePercent: data.service_fee_rate * 100,
-      tipPresets: data.tip_presets_json,
+      taxPercent: (data.tax_rate || 0.0875) * 100,
+      serviceFeePercent: (data.service_fee_rate || 0.03) * 100,
+      tipPresets: data.tip_presets_json || [15, 18, 20, 25],
     })
   } catch (error) {
     console.error("Error fetching settings:", error)
