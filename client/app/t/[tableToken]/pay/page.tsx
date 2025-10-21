@@ -3,16 +3,24 @@ import { buildApiUrl } from "@/lib/server-url"
 
 async function getBillData(tableToken: string) {
   try {
-    const response = await fetch(buildApiUrl(`/api/public/bill/${tableToken}`), {
+    const apiUrl = await buildApiUrl(`/api/public/bill/${tableToken}`)
+    const response = await fetch(apiUrl, {
+      headers: {
+        Accept: "application/json",
+      },
       cache: "no-store",
-    })
-    if (response.ok) {
-      return await response.json()
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Error fetching bill:", error)
+    console.error("Error fetching bill:", error);
+    return null;
   }
-  return null
 }
 
 export default async function PayPage({ params }: { params: Promise<{ tableToken: string }> }) {

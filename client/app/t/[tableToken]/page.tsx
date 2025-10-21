@@ -7,7 +7,7 @@ import { buildApiUrl } from "@/lib/server-url"
 
 async function getTableContext(tableToken: string) {
   try {
-    const url = buildApiUrl(`/api/public/table-context/${tableToken}`)
+    const url = await buildApiUrl(`/api/public/table-context/${tableToken}`)
     const response = await fetch(url, {
       cache: "no-store",
     })
