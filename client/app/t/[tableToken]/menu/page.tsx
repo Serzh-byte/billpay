@@ -3,10 +3,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import Link from "next/link"
+import { buildApiUrl } from "@/lib/server-url"
 
 async function getMenuData(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/menu/${tableToken}`, {
+    const response = await fetch(buildApiUrl(`/api/public/menu/${tableToken}`), {
       cache: "no-store",
     })
     if (response.ok) {
@@ -20,7 +21,7 @@ async function getMenuData(tableToken: string) {
 
 async function getTableContext(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/table-context/${tableToken}`, {
+    const response = await fetch(buildApiUrl(`/api/public/table-context/${tableToken}`), {
       cache: "no-store",
     })
     if (response.ok) {

@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { UtensilsCrossed, CreditCard, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { buildApiUrl } from "@/lib/server-url"
 
 async function getTableContext(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/table-context/${tableToken}`, {
+    const url = buildApiUrl(`/api/public/table-context/${tableToken}`)
+    const response = await fetch(url, {
       cache: "no-store",
     })
     if (response.ok) {

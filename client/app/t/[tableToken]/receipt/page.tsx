@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import { buildApiUrl } from "@/lib/server-url"
 
 async function getBillData(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/bill/${tableToken}`, {
+    const response = await fetch(buildApiUrl(`/api/public/bill/${tableToken}`), {
       cache: "no-store",
     })
     if (response.ok) {
@@ -19,7 +20,7 @@ async function getBillData(tableToken: string) {
 
 async function getTableContext(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/table-context/${tableToken}`, {
+    const response = await fetch(buildApiUrl(`/api/public/table-context/${tableToken}`), {
       cache: "no-store",
     })
     if (response.ok) {

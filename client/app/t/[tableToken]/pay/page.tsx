@@ -1,8 +1,9 @@
 import { PaymentView } from "@/components/payment-view"
+import { buildApiUrl } from "@/lib/server-url"
 
 async function getBillData(tableToken: string) {
   try {
-    const response = await fetch(`http://localhost:3000/api/public/bill/${tableToken}`, {
+    const response = await fetch(buildApiUrl(`/api/public/bill/${tableToken}`), {
       cache: "no-store",
     })
     if (response.ok) {
