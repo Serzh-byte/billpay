@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, ShoppingBag, Plus, Minus, X } from "lucide-react"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
-import { LanguageSwitcher } from "@/components/language-switcher"
+import { translateCategoryName, translateMenuItemName, translateMenuItemDescription } from "@/lib/translations"
 import type { Restaurant, Table, MenuItem, Category, Bill } from "@/lib/types"
 
 interface MenuViewProps {
@@ -19,7 +19,7 @@ interface MenuViewProps {
 }
 
 export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [quantity, setQuantity] = useState(1)
@@ -123,7 +123,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
             <h1 className="font-semibold text-lg">{restaurant.name}</h1>
             <p className="text-sm text-muted-foreground">{t('menu')}</p>
           </div>
-          <LanguageSwitcher />
+          
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
               onClick={() => setSelectedCategory(category.id)}
               className="whitespace-nowrap"
             >
-              {category.name}
+              {translateCategoryName(language, category.name)}
             </Button>
           ))}
         </div>
@@ -170,8 +170,8 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                   />
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-pretty">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2 text-pretty">{item.description}</p>
+                  <h3 className="font-semibold text-pretty">{translateMenuItemName(language, item.name)}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2 text-pretty">{translateMenuItemDescription(language, item.description)}</p>
                   <p className="font-semibold text-primary mt-2">${item.price.toFixed(2)}</p>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                   {bill.items.map((item) => (
                     <div key={item.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{item.menuItemName}</p>
+                        <p className="font-medium text-sm">{translateMenuItemName(language, item.menuItemName)}</p>
                         <p className="text-xs text-muted-foreground">{t('qty')}: {item.quantity}</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -253,9 +253,9 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
 
       {/* Item Detail Dialog */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent>
+          <DialogContent>
           <DialogHeader>
-            <DialogTitle>{selectedItem?.name}</DialogTitle>
+            <DialogTitle>{selectedItem ? translateMenuItemName(language, selectedItem.name) : ''}</DialogTitle>
           </DialogHeader>
           {selectedItem && (
             <div className="space-y-4">
@@ -266,7 +266,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                   className="w-full h-48 rounded-lg object-cover"
                 />
               )}
-              <p className="text-muted-foreground text-pretty">{selectedItem.description}</p>
+              <p className="text-muted-foreground text-pretty">{translateMenuItemDescription(language, selectedItem.description)}</p>
               <p className="text-2xl font-bold text-primary">${selectedItem.price.toFixed(2)}</p>
 
               <div className="flex items-center justify-center gap-4">

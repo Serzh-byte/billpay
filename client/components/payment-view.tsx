@@ -10,7 +10,7 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/language-context"
-import { LanguageSwitcher } from "@/components/language-switcher"
+import { translateMenuItemName } from "@/lib/translations"
 import type { Restaurant, Table, Bill, Settings, PaymentMode } from "@/lib/types"
 
 interface PaymentViewProps {
@@ -22,7 +22,7 @@ interface PaymentViewProps {
 }
 
 export function PaymentView({ restaurant, table, tableToken, initialBill, settings }: PaymentViewProps) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const router = useRouter()
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("full")
   const [tipPercent, setTipPercent] = useState(15)
@@ -32,9 +32,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
   if (!initialBill) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="absolute top-4 right-4">
-          <LanguageSwitcher />
-        </div>
+        
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">{t('noBillFound')}</p>
@@ -83,7 +81,6 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
             <h1 className="font-semibold text-lg">{t('payment')}</h1>
             <p className="text-sm text-muted-foreground">{restaurant.name}</p>
           </div>
-          <LanguageSwitcher />
         </div>
       </div>
 
@@ -97,7 +94,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
             {initialBill.items.map((item) => (
               <div key={item.id} className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className="font-medium">{item.menuItemName}</p>
+                  <p className="font-medium">{translateMenuItemName(language, item.menuItemName)}</p>
                   <p className="text-sm text-muted-foreground">{t('qty')}: {item.quantity}</p>
                 </div>
                 <p className="font-semibold">${item.lineTotal.toFixed(2)}</p>

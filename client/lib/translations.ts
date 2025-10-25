@@ -72,6 +72,11 @@ export const translations = {
     confirm: 'Confirm',
     cancel: 'Cancel',
     back: 'Back',
+    // Category labels
+    category_appetizers: 'Appetizers',
+    category_main_courses: 'Main Courses',
+    category_desserts: 'Desserts',
+    category_beverages: 'Beverages',
   },
   ru: {
     // Landing Page
@@ -138,6 +143,11 @@ export const translations = {
     confirm: 'Подтвердить',
     cancel: 'Отмена',
     back: 'Назад',
+    // Category labels
+    category_appetizers: 'Закуски',
+    category_main_courses: 'Основные блюда',
+    category_desserts: 'Десерты',
+    category_beverages: 'Напитки',
   },
   hy: {
     // Landing Page
@@ -204,7 +214,138 @@ export const translations = {
     confirm: 'Հաստատել',
     cancel: 'Չեղարկել',
     back: 'Հետ',
+    // Category labels
+    category_appetizers: 'Նախորվածներ',
+    category_main_courses: 'Հիմնական ուտեստներ',
+    category_desserts: 'Դեսերտներ',
+    category_beverages: 'Խմիչքներ',
   },
+}
+
+// Menu items translation map. Keyed by original item name -> translations.
+export const menuItemTranslations: Record<string, Partial<Record<Language, string>>> = {
+  // Appetizers
+  'Spring Rolls': { ru: 'Спринг-роллы', hy: 'Սպրինգ ռոլներ' },
+  'Chicken Wings': { ru: 'Куриные крылышки', hy: 'Հավի թևեր' },
+  'Calamari': { ru: 'Кальмары', hy: 'Կաղամար' },
+  
+  // Main Courses
+  'Grilled Salmon': { ru: 'Лосось на гриле', hy: 'Խորովածի սաղմոն' },
+  'Ribeye Steak': { ru: 'Стейк Рибай', hy: 'Ռիբայ սթեյք' },
+  'Chicken Parmesan': { ru: 'Курица Пармезан', hy: 'Հավ Պարմեզան' },
+  'Vegetarian Pasta': { ru: 'Вегетарианская паста', hy: 'Բանջարեղենային մակարոն' },
+  
+  // Desserts
+  'Chocolate Lava Cake': { ru: 'Шоколадный лавовый торт', hy: 'Շոկոլադե լավա տորթ' },
+  'Tiramisu': { ru: 'Тирамису', hy: 'Տիրամիսու' },
+  'Cheesecake': { ru: 'Чизкейк', hy: 'Չիզքեյք' },
+  
+  // Beverages
+  'Soft Drinks': { ru: 'Безалкогольные напитки', hy: 'Զովացուցիչ ըմպելիքներ' },
+  'Fresh Juice': { ru: 'Свежевыжатый сок', hy: 'Թարմ հյութ' },
+  'Coffee': { ru: 'Кофе', hy: 'Սուրճ' },
+}
+
+// Menu item descriptions translation map.
+export const menuItemDescriptions: Record<string, Partial<Record<Language, string>>> = {
+  // Appetizers
+  'Crispy vegetable spring rolls with sweet chili sauce': { 
+    ru: 'Хрустящие овощные спринг-роллы со сладким чили соусом', 
+    hy: 'Քրթած բանջարեղենային սպրինգ ռոլներ քաղցր չիլի սոուսով' 
+  },
+  'Buffalo wings with ranch dressing': { 
+    ru: 'Крылышки Буффало с ранч-соусом', 
+    hy: 'Բուֆֆալո թևեր ռանչ սոուսով' 
+  },
+  'Fried calamari rings with marinara sauce': { 
+    ru: 'Жареные кольца кальмара с соусом маринара', 
+    hy: 'Տապակած կաղամարի օղակներ մարինարա սոուսով' 
+  },
+  
+  // Main Courses
+  'Fresh Atlantic salmon with roasted vegetables': { 
+    ru: 'Свежий атлантический лосось с жареными овощами', 
+    hy: 'Թարմ ատլանտյան սաղմոն խորովածի բանջարեղեններով' 
+  },
+  '12oz ribeye with garlic mashed potatoes': { 
+    ru: 'Рибай 12 унций с картофельным пюре с чесноком', 
+    hy: '12 ունց ռիբայ սխտորի պյուրեով սխտորով' 
+  },
+  'Breaded chicken breast with marinara and mozzarella': { 
+    ru: 'Куриная грудка в панировке с соусом маринара и моцареллой', 
+    hy: 'Պանարված հավի կուրծք մարինարա սոուսով և մոցարելլայով' 
+  },
+  'Penne pasta with seasonal vegetables in tomato sauce': { 
+    ru: 'Паста пенне с сезонными овощами в томатном соусе', 
+    hy: 'Պեննե մակարոն սեզոնային բանջարեղեններով լոլիկի սոուսում' 
+  },
+  
+  // Desserts
+  'Warm chocolate cake with vanilla ice cream': { 
+    ru: 'Теплый шоколадный торт с ванильным мороженым', 
+    hy: 'Տաք շոկոլադե տորթ վանիլային պաղպաղակով' 
+  },
+  'Classic Italian dessert with coffee and mascarpone': { 
+    ru: 'Классический итальянский десерт с кофе и маскарпоне', 
+    hy: 'Դասական իտալական դեսերտ սուրճով և մասկարպոնեով' 
+  },
+  'New York style cheesecake with berry compote': { 
+    ru: 'Чизкейк в нью-йоркском стиле с ягодным компотом', 
+    hy: 'Նյու Յորքյան ոճի չիզքեյք հատապտղի կոմպոտով' 
+  },
+  
+  // Beverages
+  'Coca-Cola, Sprite, Fanta, Iced Tea': { 
+    ru: 'Кока-Кола, Спрайт, Фанта, Холодный чай', 
+    hy: 'Կոկա-Կոլա, Սփրայթ, Ֆանտա, Սառը թեյ' 
+  },
+  'Orange, Apple, or Cranberry juice': { 
+    ru: 'Апельсиновый, яблочный или клюквенный сок', 
+    hy: 'Նարնջի, խնձորի կամ զիբախտի հյութ' 
+  },
+  'Freshly brewed coffee': { 
+    ru: 'Свежесваренный кофе', 
+    hy: 'Թարմ եփած սուրճ' 
+  },
+}
+
+// Try to translate a category name. If it looks like one of the known English labels
+// map it to the translation keys above; otherwise return the original.
+export function translateCategoryName(lang: Language, categoryName: string): string {
+  if (!categoryName) return categoryName
+  const n = categoryName.toLowerCase()
+  if (n.includes('appetiz') || n.includes('starter') || n.includes('starter')) {
+    return translations[lang].category_appetizers || translations.en.category_appetizers
+  }
+  if (n.includes('main') || n.includes('course') || n.includes('entrée') || n.includes('entree')) {
+    return translations[lang].category_main_courses || translations.en.category_main_courses
+  }
+  if (n.includes('dessert') || n.includes('sweet')) {
+    return translations[lang].category_desserts || translations.en.category_desserts
+  }
+  if (n.includes('beverage') || n.includes('drink') || n.includes('coffee') || n.includes('tea')) {
+    return translations[lang].category_beverages || translations.en.category_beverages
+  }
+  // Fallback: return the original categoryName
+  return categoryName
+}
+
+// Translate a menu item name using the translation map when available.
+export function translateMenuItemName(lang: Language, name: string): string {
+  if (!name) return name
+  const mapped = menuItemTranslations[name]
+  if (mapped && mapped[lang]) return mapped[lang] as string
+  // fallback to English name if language missing
+  return name
+}
+
+// Translate a menu item description using the translation map when available.
+export function translateMenuItemDescription(lang: Language, description: string): string {
+  if (!description) return description
+  const mapped = menuItemDescriptions[description]
+  if (mapped && mapped[lang]) return mapped[lang] as string
+  // fallback to original description if language missing
+  return description
 }
 
 export type TranslationKey = keyof typeof translations.en

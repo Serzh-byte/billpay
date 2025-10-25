@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { UtensilsCrossed, CreditCard, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useLanguage } from "@/contexts/language-context"
-import { LanguageSwitcher } from "@/components/language-switcher"
 
 interface TableLandingClientProps {
   tableToken: string
@@ -23,9 +22,6 @@ export function TableLandingClient({ tableToken, restaurant }: TableLandingClien
   if (!restaurant) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
-        <div className="absolute top-4 right-4">
-          <LanguageSwitcher />
-        </div>
         <Card className="w-full max-w-md shadow-lg">
           <CardContent className="pt-8 pb-8 px-6">
             <Alert variant="destructive">
@@ -53,9 +49,6 @@ export function TableLandingClient({ tableToken, restaurant }: TableLandingClien
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
-      </div>
       <Card className="w-full max-w-md shadow-lg">
         <CardContent className="pt-8 pb-8 px-6">
           <div className="flex flex-col items-center gap-6">
