@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/language-context"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import type { Restaurant, Table, Bill, Settings, PaymentMode } from "@/lib/types"
 
 interface PaymentViewProps {
@@ -20,6 +22,7 @@ interface PaymentViewProps {
 }
 
 export function PaymentView({ restaurant, table, tableToken, initialBill, settings }: PaymentViewProps) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("full")
   const [tipPercent, setTipPercent] = useState(15)
@@ -29,9 +32,12 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
   if (!initialBill) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">No bill found</p>
+            <p className="text-center text-muted-foreground">{t('noBillFound')}</p>
           </CardContent>
         </Card>
       </div>
@@ -74,9 +80,10 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="font-semibold text-lg">Payment</h1>
+            <h1 className="font-semibold text-lg">{t('payment')}</h1>
             <p className="text-sm text-muted-foreground">{restaurant.name}</p>
           </div>
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -84,14 +91,14 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
         {/* Order Items */}
         <Card>
           <CardHeader>
-            <CardTitle>Your Order</CardTitle>
+            <CardTitle>{t('yourOrder')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {initialBill.items.map((item) => (
               <div key={item.id} className="flex justify-between items-start">
                 <div className="flex-1">
                   <p className="font-medium">{item.menuItemName}</p>
-                  <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                  <p className="text-sm text-muted-foreground">{t('qty')}: {item.quantity}</p>
                 </div>
                 <p className="font-semibold">${item.lineTotal.toFixed(2)}</p>
               </div>
@@ -102,26 +109,26 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
         {/* Payment Mode */}
         <Card>
           <CardHeader>
-            <CardTitle>Payment Mode</CardTitle>
+            <CardTitle>{t('paymentMode')}</CardTitle>
           </CardHeader>
           <CardContent>
             <RadioGroup value={paymentMode} onValueChange={(value) => setPaymentMode(value as PaymentMode)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="full" id="full" />
                 <Label htmlFor="full" className="flex-1 cursor-pointer">
-                  Pay Full Bill
+                  {t('payFullBill')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="split_even" id="split_even" />
                 <Label htmlFor="split_even" className="flex-1 cursor-pointer">
-                  Split Evenly
+                  {t('splitEvenly')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="mine_only" id="mine_only" />
                 <Label htmlFor="mine_only" className="flex-1 cursor-pointer">
-                  My Items Only
+                  {t('myItemsOnly')}
                 </Label>
               </div>
             </RadioGroup>
@@ -131,20 +138,20 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
         {/* Bill Breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle>Bill Breakdown</CardTitle>
+            <CardTitle>{t('billBreakdown')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex justify-between">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>${amountToPay.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Tax ({settings.taxPercent}%)</span>
-              <span>Included</span>
+              <span>{t('tax')} ({settings.taxPercent}%)</span>
+              <span>{t('included')}</span>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Service Fee ({settings.serviceFeePercent}%)</span>
-              <span>Included</span>
+              <span>{t('serviceFee')} ({settings.serviceFeePercent}%)</span>
+              <span>{t('included')}</span>
             </div>
           </CardContent>
         </Card>
@@ -152,7 +159,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
         {/* Tip */}
         <Card>
           <CardHeader>
-            <CardTitle>Add Tip</CardTitle>
+            <CardTitle>{t('addTip')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-4 gap-2">
@@ -170,7 +177,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
               ))}
             </div>
             <div>
-              <Label htmlFor="custom-tip">Custom Amount</Label>
+              <Label htmlFor="custom-tip">{t('customAmount')}</Label>
               <Input
                 id="custom-tip"
                 type="number"
@@ -181,7 +188,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
               />
             </div>
             <div className="flex justify-between text-sm">
-              <span>Tip Amount</span>
+              <span>{t('tipAmount')}</span>
               <span className="font-semibold">${tipAmount.toFixed(2)}</span>
             </div>
           </CardContent>
@@ -191,14 +198,14 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
         <Card className="bg-primary text-primary-foreground">
           <CardContent className="pt-6">
             <div className="flex justify-between items-center">
-              <span className="text-xl font-bold">Total</span>
+              <span className="text-xl font-bold">{t('total')}</span>
               <span className="text-3xl font-bold">${total.toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
 
         <Button size="lg" className="w-full" onClick={handlePayment} disabled={isProcessing}>
-          {isProcessing ? "Processing..." : "Confirm Payment"}
+          {isProcessing ? t('processingPayment') : t('confirmPayment')}
         </Button>
       </div>
     </div>

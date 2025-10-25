@@ -7,6 +7,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ArrowLeft, ShoppingBag, Plus, Minus, X } from "lucide-react"
 import Link from "next/link"
+import { useLanguage } from "@/contexts/language-context"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import type { Restaurant, Table, MenuItem, Category, Bill } from "@/lib/types"
 
 interface MenuViewProps {
@@ -17,6 +19,7 @@ interface MenuViewProps {
 }
 
 export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps) {
+  const { t } = useLanguage()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
   const [quantity, setQuantity] = useState(1)
@@ -118,8 +121,9 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
           </Button>
           <div className="flex-1">
             <h1 className="font-semibold text-lg">{restaurant.name}</h1>
-            <p className="text-sm text-muted-foreground">Menu</p>
+            <p className="text-sm text-muted-foreground">{t('menu')}</p>
           </div>
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -132,7 +136,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
             onClick={() => setSelectedCategory(null)}
             className="whitespace-nowrap"
           >
-            All
+            {t('all')}
           </Button>
           {menu.categories.map((category) => (
             <Button
@@ -181,13 +185,13 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
         <SheetTrigger asChild>
           <Button size="lg" className="fixed bottom-4 right-4 left-4 shadow-lg h-14">
             <ShoppingBag className="mr-2 h-5 w-5" />
-            View Bill {billItemCount > 0 && `(${billItemCount})`}
+            {t('viewBill')} {billItemCount > 0 && `(${billItemCount})`}
             {bill && <span className="ml-auto font-bold">${bill.total.toFixed(2)}</span>}
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="max-h-[85vh] flex flex-col p-0">
           <SheetHeader className="px-6 pt-6 pb-4">
-            <SheetTitle>Your Bill</SheetTitle>
+            <SheetTitle>{t('yourBill')}</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-6 pb-6">
             {bill?.items && bill.items.length > 0 ? (
@@ -197,7 +201,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
                     <div key={item.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm">{item.menuItemName}</p>
-                        <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                        <p className="text-xs text-muted-foreground">{t('qty')}: {item.quantity}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-sm whitespace-nowrap">
@@ -219,29 +223,29 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
 
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
+                    <span>{t('subtotal')}</span>
                     <span>${bill.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Tax</span>
+                    <span>{t('tax')}</span>
                     <span>${bill.tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Service Fee</span>
+                    <span>{t('serviceFee')}</span>
                     <span>${bill.serviceFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                    <span>Total</span>
+                    <span>{t('total')}</span>
                     <span>${bill.total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <Button asChild size="lg" className="w-full">
-                  <Link href={`/t/${tableToken}/pay`}>Go to Payment</Link>
+                  <Link href={`/t/${tableToken}/pay`}>{t('goToPayment')}</Link>
                 </Button>
               </div>
             ) : (
-              <p className="text-center text-muted-foreground py-8">No items added yet</p>
+              <p className="text-center text-muted-foreground py-8">{t('noItemsYet')}</p>
             )}
           </div>
         </SheetContent>
@@ -276,7 +280,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
               </div>
 
               <Button size="lg" className="w-full" onClick={handleAddToBill} disabled={isLoading}>
-                {isLoading ? "Adding..." : `Add to Bill - $${(selectedItem.price * quantity).toFixed(2)}`}
+                {isLoading ? t('adding') : `${t('addToBill')} - $${(selectedItem.price * quantity).toFixed(2)}`}
               </Button>
             </div>
           )}
