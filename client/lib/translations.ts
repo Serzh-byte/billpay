@@ -23,8 +23,8 @@ export const translations = {
     addToOrder: 'Add to Order',
     addToBill: 'Add to Bill',
     adding: 'Adding...',
-    viewBill: 'View Bill',
-    yourBill: 'Your Bill',
+    viewBill: 'View Cart',
+    yourBill: 'Your Cart',
     yourOrder: 'Your Order',
     items: 'items',
     item: 'item',
@@ -33,7 +33,7 @@ export const translations = {
     quantity: 'Quantity',
     qty: 'Qty',
     noItemsYet: 'No items added yet',
-    goToPayment: 'Go to Payment',
+    goToPayment: 'Order',
     
     // Payment Page
     payment: 'Payment',
@@ -94,8 +94,8 @@ export const translations = {
     addToOrder: 'Добавить в заказ',
     addToBill: 'Добавить в счет',
     adding: 'Добавление...',
-    viewBill: 'Посмотреть счет',
-    yourBill: 'Ваш счет',
+    viewBill: 'Посмотреть корзину',
+    yourBill: 'Ваша корзина',
     yourOrder: 'Ваш заказ',
     items: 'позиций',
     item: 'позиция',
@@ -104,7 +104,7 @@ export const translations = {
     quantity: 'Количество',
     qty: 'Кол-во',
     noItemsYet: 'Позиции еще не добавлены',
-    goToPayment: 'Перейти к оплате',
+    goToPayment: 'Заказать',
     
     // Payment Page
     payment: 'Оплата',
@@ -165,8 +165,8 @@ export const translations = {
     addToOrder: 'Ավելացնել պատվերին',
     addToBill: 'Ավելացնել հաշիվը',
     adding: 'Ավելացվում է...',
-    viewBill: 'Դիտել հաշիվը',
-    yourBill: 'Ձեր հաշիվը',
+    viewBill: 'Դիտել զամբյուղը',
+    yourBill: 'Ձեր զամբյուղը',
     yourOrder: 'Ձեր պատվերը',
     items: 'ապրանքներ',
     item: 'ապրանք',
@@ -175,7 +175,7 @@ export const translations = {
     quantity: 'Քանակ',
     qty: 'Քնկ',
     noItemsYet: 'Ապրանքներ դեռ չեն ավելացվել',
-    goToPayment: 'Անցնել վճարման',
+    goToPayment: 'Պատվիրել',
     
     // Payment Page
     payment: 'Վճարում',
