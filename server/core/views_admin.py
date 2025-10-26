@@ -264,3 +264,66 @@ class AdminSettingsView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminOrdersView(APIView):
+    """
+    GET /api/admin/orders
+    Returns all active orders grouped by table with order details and timestamps
+    """
+    authentication_classes = [AdminTokenAuthentication]
+
+    def get(self, request):
+        restaurant = request.user
+        
+        # Get all open bills with their items
+        open_bills = Bill.objects.filter(
+            restaurant=restaurant,
+            is_open=True
+        ).prefetch_related('lines', 'table').order_by('-updated_at')
+        
+        orders = []
+        for bill in open_bills:
+            # Group items by session_id to see who ordered what
+            sessions = {}
+            for line in bill.lines.all():
+                session = line.session_id or 'unknown'
+                if session not in sessions:
+                    sessions[session] = []
+                sessions[session].append({
+                    'id': line.id,
+                    'name': line.name_snapshot,
+                    'qty': line.qty,
+                    'price': line.unit_price_cents / 100,
+                    'lineTotal': line.line_total_cents / 100,
+                    'orderedAt': line.ordered_at.isoformat() if line.ordered_at else None,
+                })
+            
+            orders.append({
+                'billId': bill.id,
+                'tableNumber': bill.table.table_token,
+                'tableName': bill.table.name,
+                'subtotal': bill.subtotal_cents / 100,
+                'tax': bill.tax_cents / 100,
+                'serviceFee': bill.service_fee_cents / 100,
+                'total': bill.total_cents / 100,
+                'createdAt': bill.created_at.isoformat(),
+                'updatedAt': bill.updated_at.isoformat(),
+                'sessionCount': len(sessions),
+                'sessions': sessions,
+                'allItems': [{
+                    'id': line.id,
+                    'name': line.name_snapshot,
+                    'qty': line.qty,
+                    'price': line.unit_price_cents / 100,
+                    'lineTotal': line.line_total_cents / 100,
+                    'orderedAt': line.ordered_at.isoformat() if line.ordered_at else None,
+                    'sessionId': line.session_id or 'unknown',
+                } for line in bill.lines.all()],
+            })
+        
+        return Response({
+            'orders': orders,
+            'totalOpenBills': len(orders),
+        })
+

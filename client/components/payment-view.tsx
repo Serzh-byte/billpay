@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -10,7 +10,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/language-context"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { translateMenuItemName } from "@/lib/translations"
+import { getSessionId } from "@/lib/session"
 import type { Restaurant, Table, Bill, Settings, PaymentMode } from "@/lib/types"
 
 interface PaymentViewProps {
@@ -28,6 +30,18 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
   const [tipPercent, setTipPercent] = useState(15)
   const [customTip, setCustomTip] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
+  
+  const sessionId = getSessionId()
+
+  // Filter items based on payment mode
+  const displayItems = useMemo(() => {
+    if (!initialBill) return []
+    if (paymentMode === "mine_only") {
+      // Only show items ordered by this session
+      return initialBill.items.filter(item => item.sessionId === sessionId)
+    }
+    return initialBill.items
+  }, [initialBill, paymentMode, sessionId])
 
   if (!initialBill) {
     return (
@@ -47,13 +61,31 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
   const serviceFee = initialBill.serviceFee
 
   let amountToPay = subtotal + tax + serviceFee
+  let mySubtotal = subtotal
+  let myTax = tax
+  let myServiceFee = serviceFee
 
   if (paymentMode === "split_even") {
     // For demo, assume 2 people
     amountToPay = amountToPay / 2
+    mySubtotal = subtotal / 2
+    myTax = tax / 2
+    myServiceFee = serviceFee / 2
   } else if (paymentMode === "mine_only") {
-    // For demo, use half the items
-    amountToPay = amountToPay / 2
+    // Calculate only my items
+    mySubtotal = displayItems.reduce((sum, item) => sum + item.lineTotal, 0)
+    
+    // Calculate proportional tax and service fee
+    if (subtotal > 0) {
+      const proportion = mySubtotal / subtotal
+      myTax = tax * proportion
+      myServiceFee = serviceFee * proportion
+    } else {
+      myTax = 0
+      myServiceFee = 0
+    }
+    
+    amountToPay = mySubtotal + myTax + myServiceFee
   }
 
   const tipAmount = customTip ? Number.parseFloat(customTip) : (amountToPay * tipPercent) / 100
@@ -81,6 +113,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
             <h1 className="font-semibold text-lg">{t('payment')}</h1>
             <p className="text-sm text-muted-foreground">{restaurant.name}</p>
           </div>
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -91,7 +124,7 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
             <CardTitle>{t('yourOrder')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {initialBill.items.map((item) => (
+            {displayItems.map((item) => (
               <div key={item.id} className="flex justify-between items-start">
                 <div className="flex-1">
                   <p className="font-medium">{translateMenuItemName(language, item.menuItemName)}</p>
@@ -100,6 +133,9 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
                 <p className="font-semibold">${item.lineTotal.toFixed(2)}</p>
               </div>
             ))}
+            {displayItems.length === 0 && (
+              <p className="text-center text-muted-foreground py-4">{t('noItemsYet')}</p>
+            )}
           </CardContent>
         </Card>
 
@@ -140,15 +176,15 @@ export function PaymentView({ restaurant, table, tableToken, initialBill, settin
           <CardContent className="space-y-2">
             <div className="flex justify-between">
               <span>{t('subtotal')}</span>
-              <span>${amountToPay.toFixed(2)}</span>
+              <span>${mySubtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>{t('tax')} ({settings.taxPercent}%)</span>
-              <span>{t('included')}</span>
+              <span>${myTax.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>{t('serviceFee')} ({settings.serviceFeePercent}%)</span>
-              <span>{t('included')}</span>
+              <span>${myServiceFee.toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>

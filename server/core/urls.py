@@ -5,7 +5,8 @@ from .views_public import (
 )
 from .views_admin import (
     AdminDashboardView, AdminMenuCategoriesView, AdminMenuCategoryDetailView,
-    AdminMenuItemsView, AdminMenuItemDetailView, AdminTablesView, AdminSettingsView
+    AdminMenuItemsView, AdminMenuItemDetailView, AdminTablesView, AdminSettingsView,
+    AdminOrdersView
 )
 
 urlpatterns = [
@@ -20,6 +21,7 @@ urlpatterns = [
     
     # Admin endpoints
     path('admin/dashboard', AdminDashboardView.as_view(), name='admin-dashboard'),
+    path('admin/orders', AdminOrdersView.as_view(), name='admin-orders'),
     path('admin/menu/categories', AdminMenuCategoriesView.as_view(), name='admin-categories'),
     path('admin/menu/categories/<int:category_id>', AdminMenuCategoryDetailView.as_view(), name='admin-category-detail'),
     path('admin/menu/items', AdminMenuItemsView.as_view(), name='admin-items'),

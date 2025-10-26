@@ -77,7 +77,7 @@ class AddBillItemView(APIView):
     """
     POST /api/public/tables/<table_id>/bill/items
     Add item to bill
-    Body: { itemId, qty, options }
+    Body: { itemId, qty, options, sessionId }
     """
     def post(self, request, table_id):
         try:
@@ -88,6 +88,7 @@ class AddBillItemView(APIView):
         item_id = request.data.get('itemId')
         qty = request.data.get('qty', 1)
         options = request.data.get('options', {})
+        session_id = request.data.get('sessionId', '')  # Track which customer ordered
         
         try:
             menu_item = MenuItem.objects.get(id=item_id, restaurant=table.restaurant)
@@ -104,7 +105,7 @@ class AddBillItemView(APIView):
             defaults={'restaurant': table.restaurant}
         )
         
-        # Create bill line
+        # Create bill line with session tracking
         unit_price = menu_item.price_cents
         line_total = unit_price * qty
         
@@ -115,7 +116,8 @@ class AddBillItemView(APIView):
             options_snapshot=options,
             qty=qty,
             unit_price_cents=unit_price,
-            line_total_cents=line_total
+            line_total_cents=line_total,
+            session_id=session_id  # Store who ordered this item
         )
         
         # Recalculate bill totals
@@ -160,7 +162,7 @@ class PaymentIntentView(APIView):
     """
     POST /api/public/tables/<table_id>/payment/intent
     Create payment intent (mock Stripe)
-    Body: { mode: "full"|"split_even"|"mine_only", seats?: number, tip?: number }
+    Body: { mode: "full"|"split_even"|"mine_only", seats?: number, tip?: number, sessionId?: string }
     """
     def post(self, request, table_id):
         try:
@@ -176,6 +178,7 @@ class PaymentIntentView(APIView):
         mode = request.data.get('mode', 'full')
         seats = request.data.get('seats', 1)
         tip = request.data.get('tip', 0)
+        session_id = request.data.get('sessionId', '')
         
         # Calculate amount owed based on mode
         subtotal = bill.subtotal_cents
@@ -190,8 +193,28 @@ class PaymentIntentView(APIView):
             base_per_person = (subtotal + tax + service_fee) // seats
             amount_cents = base_per_person + tip
         elif mode == 'mine_only':
-            # For MVP, treat as same as full (would need line-item selection in production)
-            amount_cents = subtotal + tax + service_fee + tip
+            # Calculate subtotal for only this session's items
+            if not session_id:
+                return Response({'error': 'sessionId required for mine_only mode'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            my_items_subtotal = sum(
+                line.line_total_cents 
+                for line in bill.lines.filter(session_id=session_id)
+            )
+            
+            if my_items_subtotal == 0:
+                return Response({'error': 'No items found for this session'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Calculate proportional tax and service fee
+            if subtotal > 0:
+                proportion = my_items_subtotal / subtotal
+                my_tax = int(tax * proportion)
+                my_service_fee = int(service_fee * proportion)
+            else:
+                my_tax = 0
+                my_service_fee = 0
+            
+            amount_cents = my_items_subtotal + my_tax + my_service_fee + tip
         else:
             return Response({'error': 'Invalid payment mode'}, status=status.HTTP_400_BAD_REQUEST)
         

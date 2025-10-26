@@ -53,7 +53,7 @@ export const translations = {
     paymentMode: 'Payment Mode',
     payFullBill: 'Pay Full Bill',
     splitEvenly: 'Split Evenly',
-    myItemsOnly: 'My Items Only',
+    myItemsOnly: 'Pay for My Items Only',
     included: 'Included',
     noBillFound: 'No bill found',
     
@@ -72,6 +72,22 @@ export const translations = {
     confirm: 'Confirm',
     cancel: 'Cancel',
     back: 'Back',
+    
+    // Admin
+    admin: 'Admin',
+    dashboard: 'Dashboard',
+    orders: 'Orders',
+    activeOrders: 'Active Orders',
+    openTable: 'open table',
+    openTables: 'open tables',
+    refresh: 'Refresh',
+    customer: 'customer',
+    customers: 'customers',
+    orderItems: 'Order Items',
+    startedAt: 'Started',
+    byCustomer: 'By Customer',
+    noActiveOrders: 'No active orders',
+    
     // Category labels
     category_appetizers: 'Appetizers',
     category_main_courses: 'Main Courses',
@@ -124,7 +140,7 @@ export const translations = {
     paymentMode: 'Способ оплаты',
     payFullBill: 'Оплатить полный счет',
     splitEvenly: 'Разделить поровну',
-    myItemsOnly: 'Только мои позиции',
+    myItemsOnly: 'Оплатить только мои позиции',
     included: 'Включено',
     noBillFound: 'Счет не найден',
     
@@ -143,6 +159,22 @@ export const translations = {
     confirm: 'Подтвердить',
     cancel: 'Отмена',
     back: 'Назад',
+    
+    // Admin
+    admin: 'Админ',
+    dashboard: 'Панель',
+    orders: 'Заказы',
+    activeOrders: 'Активные заказы',
+    openTable: 'открытый столик',
+    openTables: 'открытых столиков',
+    refresh: 'Обновить',
+    customer: 'клиент',
+    customers: 'клиентов',
+    orderItems: 'Заказанные блюда',
+    startedAt: 'Начато',
+    byCustomer: 'По клиентам',
+    noActiveOrders: 'Нет активных заказов',
+    
     // Category labels
     category_appetizers: 'Закуски',
     category_main_courses: 'Основные блюда',
@@ -195,7 +227,7 @@ export const translations = {
     paymentMode: 'Վճարման եղանակ',
     payFullBill: 'Վճարել ամբողջ հաշիվը',
     splitEvenly: 'Բաժանել հավասարապես',
-    myItemsOnly: 'Միայն իմ ապրանքները',
+    myItemsOnly: 'Վճարել միայն իմ ապրանքները',
     included: 'Ներառված է',
     noBillFound: 'Հաշիվ չի գտնվել',
     
@@ -214,6 +246,22 @@ export const translations = {
     confirm: 'Հաստատել',
     cancel: 'Չեղարկել',
     back: 'Հետ',
+    
+    // Admin
+    admin: 'Ադմին',
+    dashboard: 'Վահանակ',
+    orders: 'Պատվերներ',
+    activeOrders: 'Ակտիվ պատվերներ',
+    openTable: 'բաց սեղան',
+    openTables: 'բաց սեղաններ',
+    refresh: 'Թարմացնել',
+    customer: 'հաճախորդ',
+    customers: 'հաճախորդներ',
+    orderItems: 'Պատվիրված ուտեստներ',
+    startedAt: 'Սկսվել է',
+    byCustomer: 'Ըստ հաճախորդի',
+    noActiveOrders: 'Ակտիվ պատվերներ չկան',
+    
     // Category labels
     category_appetizers: 'Նախորվածներ',
     category_main_courses: 'Հիմնական ուտեստներ',

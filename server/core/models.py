@@ -105,6 +105,8 @@ class BillLine(models.Model):
     qty = models.IntegerField(default=1)
     unit_price_cents = models.IntegerField()
     line_total_cents = models.IntegerField()
+    session_id = models.CharField(max_length=255, blank=True, default='')  # Track which customer ordered this
+    ordered_at = models.DateTimeField(auto_now_add=True)  # When this item was ordered
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

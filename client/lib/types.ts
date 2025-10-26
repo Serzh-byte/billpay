@@ -34,6 +34,8 @@ export interface BillItem {
   price: number
   lineTotal: number
   options?: Record<string, any>
+  sessionId?: string
+  orderedAt?: string
 }
 
 export interface Bill {

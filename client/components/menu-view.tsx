@@ -8,7 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, ShoppingBag, Plus, Minus, X } from "lucide-react"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { translateCategoryName, translateMenuItemName, translateMenuItemDescription } from "@/lib/translations"
+import { getSessionId } from "@/lib/session"
 import type { Restaurant, Table, MenuItem, Category, Bill } from "@/lib/types"
 
 interface MenuViewProps {
@@ -52,6 +54,8 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
     setIsLoading(true)
 
     try {
+      const sessionId = getSessionId() // Get or create session ID
+      
       const response = await fetch(`/api/public/bill/${tableToken}`, {
         method: "POST",
         headers: {
@@ -61,6 +65,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
           itemId: selectedItem.id,
           quantity,
           options: {},
+          sessionId, // Send session ID with the order
         }),
       })
 
@@ -123,7 +128,7 @@ export function MenuView({ restaurant, table, tableToken, menu }: MenuViewProps)
             <h1 className="font-semibold text-lg">{restaurant.name}</h1>
             <p className="text-sm text-muted-foreground">{t('menu')}</p>
           </div>
-          
+          <LanguageSwitcher />
         </div>
       </div>
 

@@ -25,7 +25,7 @@ class MenuCategoryListSerializer(serializers.ModelSerializer):
 class BillLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = BillLine
-        fields = ['id', 'name_snapshot', 'options_snapshot', 'qty', 'unit_price_cents', 'line_total_cents']
+        fields = ['id', 'name_snapshot', 'options_snapshot', 'qty', 'unit_price_cents', 'line_total_cents', 'session_id', 'ordered_at']
 
 
 class BillSerializer(serializers.ModelSerializer):

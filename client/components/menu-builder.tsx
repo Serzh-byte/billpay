@@ -155,7 +155,7 @@ export function MenuBuilder({ adminToken, initialMenu }: MenuBuilderProps) {
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {menu.categories.map((category) => (
+          {(menu?.categories || []).map((category) => (
             <Card key={category.id}>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
@@ -214,7 +214,7 @@ export function MenuBuilder({ adminToken, initialMenu }: MenuBuilderProps) {
                     onChange={(e) => setItemForm({ ...itemForm, categoryId: e.target.value })}
                   >
                     <option value="">Select category</option>
-                    {menu.categories.map((cat) => (
+                    {(menu?.categories || []).map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.name}
                       </option>
@@ -272,7 +272,7 @@ export function MenuBuilder({ adminToken, initialMenu }: MenuBuilderProps) {
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {menu.items.map((item) => (
+          {(menu?.items || []).map((item) => (
             <Card key={item.id}>
               <CardContent className="pt-6">
                 <div className="flex gap-3">
